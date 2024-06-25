@@ -1,7 +1,9 @@
 #Experiment: Gene Regulatory Networks of Developmental Plasticity
-#Last updated: Aug 8, 2023
+#Last updated: June 24, 2024
+#https://julie-jung.shinyapps.io/grn-shiny/
 
 library(shiny)
+library(ggplot2)
 
 #read in our csv file with the expression values from DEseq
 DEseq <- read.csv("values_All.csv", stringsAsFactors=TRUE)
@@ -30,13 +32,19 @@ t_DEseq$condition <- m1[,1] #assigns condition as new column
 t_DEseq$development <- m1[,2]
 t_DEseq$replicate <- m1[,3]
 
-# Define UI
+# Define UI -----
 # Peruse widgets from here: https://shiny.posit.co/r/gallery/widgets/widget-gallery/
 # More/extension of widgets: https://dreamrs.github.io/shinyWidgets/
 
 ui <- fluidPage(
+  
+  # App title -----
   titlePanel("Search gene expression values from DEseq"),
+  
+  # Sidebar layout with input and output definitions -----
   sidebarLayout(
+    
+    # Sidebar panel for inputs -----
     sidebarPanel(
       
       # Drop down selection for conditions
@@ -61,9 +69,22 @@ ui <- fluidPage(
       textInput(inputId = "geneID", #the name to use to look up the value of the widget (as a character string)
                 label = "Gene:", #a label to display above the text field
                 value = "Contig0-snapTAU.703"), #placeholder
-    ),
-    mainPanel(plotOutput("boxplot"))
-    ))
+      
+      # ALTERNATIVE: Choose gene from checkboxes of possible genes (instead of providing an exact match)
+      
+    ), # This closes out the sidebar panel. 
+    
+    # Main panel for displaying outputs -----
+    
+    mainPanel(plotOutput("boxplot"), #delete this comma and on
+    
+    # I think this is also where we'd want to put our download button
+    downloadButton("downloadPlot", "Download")
+    #fluidPage(downloadButton('downloadPlot'))
+    
+    ) # This closes out the main panel. 
+  
+    )) # This closes out the UI
 
 # Define server logic
 
@@ -95,14 +116,24 @@ server <- function(input, output) {
     
     # draw the plot of expression over development
     boxplot <- ggplot(data=subset.DEseq, aes(x=development, y=geneID))+
-      geom_jitter(pch=16, size= 2.5, width=0.3, na.rm=T) +
+      geom_jitter(pch=16, size= 2.5, width=0.1, na.rm=T) +
       stat_summary(fun.data=data_summary, color='gray')+
       labs(x = "development",
            y = "gene expression") +
       theme_bw(base_size=12, base_family="Palatino")
     boxplot
     #plotly::ggplotly(expression_plot)
-  })
+    
+  }) #close renderPlot
+  
+  # Download button for plot
+ output$downloadPlot <- downloadHandler(
+   filename = function() { paste(input$dataset, '.png', sep='') },
+   content = function(file) {
+     ggsave(file, plot = plotInput(), device = "png")
+   }
+ )
+  
 }
 
 
