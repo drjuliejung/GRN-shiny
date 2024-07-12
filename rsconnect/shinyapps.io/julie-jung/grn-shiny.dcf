@@ -5,7 +5,7 @@ account: julie-jung
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 9961231
-bundleId: 8811295
+bundleId: 8811544
 url: https://julie-jung.shinyapps.io/grn-shiny/
 version: 1
 asMultiple: FALSE

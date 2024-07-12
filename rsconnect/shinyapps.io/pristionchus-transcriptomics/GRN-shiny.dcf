@@ -1,0 +1,12 @@
+name: GRN-shiny
+title: GRN-shiny
+username: pristionchus-transcriptomics
+account: pristionchus-transcriptomics
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 12311497
+bundleId: 8857838
+url: https://pristionchus-transcriptomics.shinyapps.io/GRN-shiny/
+version: 1
+asMultiple: FALSE
+asStatic: FALSE

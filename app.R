@@ -2,6 +2,8 @@
 #Last updated: June 27, 2024
 #https://julie-jung.shinyapps.io/grn-shiny/
 
+#next steps: https://shiny.posit.co/ has a feature on the homepage that allows select species and then it'll add onto the plot....  Can we do this with our conditions? 
+
 library(shiny)
 library(ggplot2)
 library(data.table)
@@ -53,7 +55,7 @@ t_DEseq$replicate <- m1[,3]
 ui <- fluidPage(
   
   # App title -----
-  titlePanel("Search gene expression values from DEseq"),
+  titlePanel("Developmental transcriptomics in Pristionchus"), 
   
   # Sidebar layout with input and output definitions -----
   sidebarLayout(position="left",
@@ -69,26 +71,26 @@ ui <- fluidPage(
       # Choose gene from checkboxes of possible genes (instead of providing an exact match)
       checkboxGroupInput(inputId = "Question", 
                          label = "Conditions: ", 
-                         choices = c("Agar WT" = "AG", #a list of values. The widget will include a menu option for each value of the list. If the list has names, these will be displayed in the drop down menu. Otherwise the values themselves will be displayed. 
-                                     "eud1 k/o" = "eud1", 
-                                     "eud1 t/g" = "eud1TG", 
+                         choices = c("Agar WT (Eu)" = "AG", #a list of values. The widget will include a menu option for each value of the list. If the list has names, these will be displayed in the drop down menu. Otherwise the values themselves will be displayed. 
+                                     "eud1 lof (St)" = "eud1", 
+                                     "eud1 transgene (Eu)" = "eud1TG", 
                                      "P. exspectatus WT" = "Pex", 
-                                     "Liquid Culture WT" = "LC", 
-                                     "lsy12 k/o" = "lsy12", 
-                                     "mbd2 k/o" = "mbd2", 
-                                     "nag1 and nag2 k/o" = "nag12", 
-                                     "nhr40 k/o" = "nhr40", 
-                                     "RS5410 St bias" = "RS5410", 
-                                     "RS5427 Eu bias" = "RS5427",
-                                     "RSA100 Eu bias" = "RSA100",
-                                     "RSC017 St bias" = "RSC017", 
-                                     "sult1 k/o" = "sult1"), 
+                                     "Liquid Culture WT (St)" = "LC", 
+                                     "lsy12 lof (St)" = "lsy12", 
+                                     "mbd2 lof (St)" = "mbd2", 
+                                     "nag1 and nag2 lof (Eu)" = "nag12", 
+                                     "nhr40 gof (Eu)" = "nhr40", 
+                                     "RS5410 (St)" = "RS5410", 
+                                     "RS5427 (Eu)" = "RS5427",
+                                     "RSA100 (Eu)" = "RSA100",
+                                     "RSC017 (St)" = "RSC017", 
+                                     "sult1 lof (Eu)" = "sult1"), 
                          selected="AG")
     ), # This closes out the sidebar panel. 
     
     # Main panel for displaying outputs -----
     
-    mainPanel(
+    mainPanel("log2(n+1) normalized values from DEseq2", 
       uiOutput('ui_plot'), 
       downloadButton("downloadPlot", "Download")
     ) # This closes out the main panel. 
@@ -115,7 +117,7 @@ server <- function(input, output) {
     MyPlot <- ggplot(data = MyData, aes(x=development, y=geneID)) +
       geom_jitter(pch=16, size=2.5, width=0.1, na.rm=T) +
       #stat_summary(fun.data=data_summary, color='gray')+
-      labs(x = "development", y = "gene expression") +
+      labs(x = "developmental time (h)", y = "gene expression (log2)") +
       theme_bw(base_size=20)
     return(MyPlot)
   }
@@ -145,7 +147,7 @@ server <- function(input, output) {
             MyPlot <- ggplot(data = subset_temp2, aes(x=development, y=subset_temp2[,1])) +
               geom_jitter(pch=16, size=2.5, width=0.1, na.rm=T) +
               stat_summary(fun.data=data_summary, color='gray')+
-              labs(x = "development", y = "gene expression") +
+              labs(x = "developmental time (h)", y = "normalized gene expression") +
               theme_bw(base_size=20)
             return(MyPlot)
           } 
